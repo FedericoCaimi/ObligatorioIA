@@ -15,7 +15,7 @@ class Agent2048(Agent):
         super().__init__(max_depth)
 
     def play(self, board: GameBoard):
-        # Si sienten que necesitan cambiar la firma se puede cambiar, asegurence de cambiarla en el main
+        #Debe retornar un movimiento
         return 0
 
     def heuristic_utility(self, board: GameBoard):
@@ -35,4 +35,45 @@ class Agent2048(Agent):
                 - Multiplicar por un empty_weight (recomendable en el orden de las decenas de miles)
         """
         pass
+
+        #EL AMBIENTE 2048 SE PUEDE MODELAR COMO UN AGENTE QUE TIRA FICHAS DE MANERA RANDOM
+    def minimax(node, depth, player):
+        actions = #acciones posibles
+
+        if depth <= 0 or len(actions) == 0:
+            return None, heuristic(node)
+
+        child_nodes = []
+        for action in actions:
+            child_node = node.clone()
+            child_node.step(action)
+            child_nodes.append((action, child_node))
+
+        value = 0
+        chosen_action = None
+        #mini
+        if not player:
+            value = float('inf')
+            for action_node in child_nodes:
+                _, minimax_value = minimax(action_node[1], depth - 1, not player)
+                if minimax_value <= value:
+                    value = minimax_value
+        #expecti
+        if not player:
+            total_child_nodes = len(action_nodes)
+            total_value = 0
+            for action_node in child_nodes:
+                _, expectimax_value = exceptimax(action_node[1], depth - 1, not player)
+                total_value += expectimax_value
+            value = (1.0*total_value)/total_child_nodes
+        #max
+        else:
+            value = float('-inf')
+            for action_node in child_nodes:
+                action, minimax_value = minimax(action_node[1], depth - 1, not player)
+                if minimax_value >= value:
+                    value = minimax_value
+                    chosen_action = action_node[0]
+
+        return chosen_action, value
 
