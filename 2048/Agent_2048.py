@@ -16,7 +16,7 @@ class Agent2048(Agent):
 
     def play(self, board: GameBoard):
         #Debe retornar un movimiento
-        action,_ = self.minimax(board, 2, 1)
+        action,_ = self.expectimax(board, 3, 1)
         return action
 
     def heuristic_utility(self, board: GameBoard):
@@ -35,7 +35,35 @@ class Agent2048(Agent):
                 - Obtener la cantidad de celdas vacias
                 - Multiplicar por un empty_weight (recomendable en el orden de las decenas de miles)
         """
-        return len(board.get_available_cells()) * 10000
+        return self.board_value(board)
+
+    def board_smoothness(self, board, weight: float = 1):
+        for x in range(4):
+            for y in range(4):
+                board.grid[x][y] = board.grid[x][y] ** 0.5
+        count = 0
+        for x in range(4):
+            for y in range(3):
+                #DIFERENCIA EN VALOR ABSOLUTO?
+                count += board.grid[x][y] - board.grid[x][y + 1]
+        for x in range(3):
+            for y in range(4):
+                #DIFERENCIA EN VALOR ABSOLUTO?
+                count += board.grid[x][y] - board.grid[x + 1][y]
+        return count * weight * -1
+
+
+    def board_value(self, board):
+        #PREGUNTAR SI HAY QUE ELEVAR CADA CASILLA AL CUADRADO, O QUE SE REFIERE?
+        count = 0
+        for x in range(4):
+            for y in range(4):
+                count += board.grid[x][y] ** 2
+        return count
+    
+    def board_blank_spaces(self, board, weight:float = 0.000001):
+        #PREGUNTAR QUE BUEN VALOR PODRIA TENER EL WEIGHT
+        return len(board.get_available_cells()) * weight
 
     #EL AMBIENTE 2048 SE PUEDE MODELAR COMO UN AGENTE QUE TIRA FICHAS DE MANERA RANDOM
     def minimax(self, board: GameBoard, depth, player):
@@ -68,9 +96,8 @@ class Agent2048(Agent):
                     chosen_action = action_node[0]
         return chosen_action, value
 
-    def expectimax(self, node, depth, player):
+    def expectimax(self, board, depth, player):
         actions = board.get_available_moves()
-
         if depth <= 0 or len(actions) == 0:
             return None, self.heuristic_utility(board)
 
@@ -83,7 +110,6 @@ class Agent2048(Agent):
         value = 0
         chosen_action = None
 
-        #REVISAR PSEUDOCODIGO
         #expecti
         if not player:
             total_child_nodes = len(action_nodes)
@@ -91,7 +117,7 @@ class Agent2048(Agent):
             for action_node in child_nodes:
                 _, expectimax_value = self.exceptimax(action_node[1], depth - 1, not player)
                 total_value += expectimax_value
-            value = (1.0*total_value)/total_child_nodes
+            value = total_value/total_child_nodes
         #max
         else:
             value = float('-inf')
