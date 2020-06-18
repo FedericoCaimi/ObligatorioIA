@@ -16,7 +16,8 @@ class Agent2048(Agent):
 
     def play(self, board: GameBoard):
         #Debe retornar un movimiento
-        return 0
+        action,_ = self.minimax(board, 2, 1)
+        return action
 
     def heuristic_utility(self, board: GameBoard):
         """
@@ -34,19 +35,18 @@ class Agent2048(Agent):
                 - Obtener la cantidad de celdas vacias
                 - Multiplicar por un empty_weight (recomendable en el orden de las decenas de miles)
         """
-        pass
+        return len(board.get_available_cells()) * 10000
 
-        #EL AMBIENTE 2048 SE PUEDE MODELAR COMO UN AGENTE QUE TIRA FICHAS DE MANERA RANDOM
-    def minimax(node, depth, player):
-        actions = #acciones posibles
-
+    #EL AMBIENTE 2048 SE PUEDE MODELAR COMO UN AGENTE QUE TIRA FICHAS DE MANERA RANDOM
+    def minimax(self, board: GameBoard, depth, player):
+        actions = board.get_available_moves()
         if depth <= 0 or len(actions) == 0:
-            return None, heuristic(node)
+            return None, self.heuristic_utility(board)
 
         child_nodes = []
         for action in actions:
-            child_node = node.clone()
-            child_node.step(action)
+            child_node = board.clone()
+            child_node.play(action)
             child_nodes.append((action, child_node))
 
         value = 0
@@ -55,22 +55,48 @@ class Agent2048(Agent):
         if not player:
             value = float('inf')
             for action_node in child_nodes:
-                _, minimax_value = minimax(action_node[1], depth - 1, not player)
+                _, minimax_value = self.minimax(action_node[1], depth - 1, not player)
                 if minimax_value <= value:
                     value = minimax_value
+        #max
+        else:
+            value = float('-inf')
+            for action_node in child_nodes:
+                action, minimax_value = self.minimax(action_node[1], depth - 1, not player)
+                if minimax_value >= value:
+                    value = minimax_value
+                    chosen_action = action_node[0]
+        return chosen_action, value
+
+    def expectimax(self, node, depth, player):
+        actions = board.get_available_moves()
+
+        if depth <= 0 or len(actions) == 0:
+            return None, self.heuristic_utility(board)
+
+        child_nodes = []
+        for action in actions:
+            child_node = board.clone()
+            child_node.play(action)
+            child_nodes.append((action, child_node))
+
+        value = 0
+        chosen_action = None
+
+        #REVISAR PSEUDOCODIGO
         #expecti
         if not player:
             total_child_nodes = len(action_nodes)
             total_value = 0
             for action_node in child_nodes:
-                _, expectimax_value = exceptimax(action_node[1], depth - 1, not player)
+                _, expectimax_value = self.exceptimax(action_node[1], depth - 1, not player)
                 total_value += expectimax_value
             value = (1.0*total_value)/total_child_nodes
         #max
         else:
             value = float('-inf')
             for action_node in child_nodes:
-                action, minimax_value = minimax(action_node[1], depth - 1, not player)
+                action, minimax_value = self.minimax(action_node[1], depth - 1, not player)
                 if minimax_value >= value:
                     value = minimax_value
                     chosen_action = action_node[0]
