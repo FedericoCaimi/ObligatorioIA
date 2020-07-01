@@ -172,7 +172,7 @@ class GameBoard:
         """
         self.move(dir)
         self.__add_random_tile()
-        return len(self.get_available_moves) == 0
+        return len(self.get_available_moves()) == 0
 
     def __add_random_tile(self):
         if np.random.random_integers(0, 99) < 90:
