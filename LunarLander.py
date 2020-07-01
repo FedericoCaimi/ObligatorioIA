@@ -4,15 +4,14 @@ from os import path as ospath
 import pickle
 import matplotlib.pyplot as plt
 
-
-VAR_UNO_SPACE = np.linspace(-2,2,8)#se toma de la documentacion
-VAR_DOS_SPACE = np.linspace(-1,2,6)#se toman los valores en base a los maximos y minimos obtenidos
-VAR_TRES_SPACE = np.linspace(-2,2,8)#en la practica esta en radianes
-VAR_CUATRO_SPACE = np.linspace(-2,1,6)#se toman los valores en base a los maximos y minimos obtenidos
-VAR_CINCO_SPACE = np.linspace(-3,3,12)
-VAR_SEIS_SPACE = np.linspace(-7,7,14)
-VAR_SIETE_SPACE = np.linspace(0,1,2)
-VAR_OCHO_SPACE = np.linspace(0,1,2)
+VAR_UNO_SPACE = np.linspace(-2,2,8)#pos_x_space
+VAR_DOS_SPACE = np.linspace(-1,2,6)#pos_y_space
+VAR_TRES_SPACE = np.linspace(-2,2,8)#vel_x_space
+VAR_CUATRO_SPACE = np.linspace(-2,1,6)#vel_y_space
+VAR_CINCO_SPACE = np.linspace(-3,3,12)#angle_space
+VAR_SEIS_SPACE = np.linspace(-7,7,14)#angular_speed_space
+VAR_SIETE_SPACE = np.linspace(0,1,2)#left_leg
+VAR_OCHO_SPACE = np.linspace(0,1,2)#right_leg
 class CartPoleAgent():
 
     def __init__(self, env: gym.Env, path, load_q): 
@@ -45,46 +44,15 @@ class CartPoleAgent():
 
     def get_state(self,obs):
         var_uno,var_dos,var_tres,var_cuatro,var_cinco,var_seis,var_siete,var_ocho = obs
-        #print('obs: ',obs)
-        #print('var_uno: ',var_uno)
-        #print('VAR_UNO_SPACE:', VAR_UNO_SPACE)
+
         var_uno_bin = int(np.digitize(var_uno,VAR_UNO_SPACE))
-        #print('var_uno_bin: ',var_uno_bin)
-
-        #print('var_dos: ',var_dos)
-        #print('VAR_DOS_SPACE:', VAR_DOS_SPACE)
         var_dos_bin = int(np.digitize(var_dos,VAR_DOS_SPACE))
-        #print('var_dos_bin: ',var_dos_bin)
-
-        #print('var_tres: ',var_tres)
-        #print('VAR_TRES_SPACE:', VAR_TRES_SPACE)
         var_tres_bin = int(np.digitize(var_tres,VAR_TRES_SPACE))
-        #print('var_tres_bin: ',var_tres_bin)
-
-        #print('var_cuatro: ',var_cuatro)
-        #print('VAR_CUATRO_SPACE:', VAR_CUATRO_SPACE)
         var_cuatro_bin = int(np.digitize(var_cuatro,VAR_CUATRO_SPACE))
-        #print('var_cuatro_bin: ',var_cuatro_bin)
-
-        #print('var_cinco: ',var_cinco)
-        #print('VAR_CINCO_SPACE:', VAR_CINCO_SPACE)
         var_cinco_bin = int(np.digitize(var_cinco,VAR_CINCO_SPACE))
-        #print('var_cinco_bin: ',var_cinco_bin)
-
-        #print('var_cinco: ',var_seis)
-        #print('VAR_CINCO_SPACE:', VAR_SEIS_SPACE)
         var_seis_bin = int(np.digitize(var_seis,VAR_SEIS_SPACE))
-        #print('var_seis_bin: ',var_seis_bin)
-
-        #print('var_cinco: ',var_siete)
-        #print('VAR_CINCO_SPACE:', VAR_SIETE_SPACE)
         var_siete_bin = int(np.digitize(var_siete,VAR_SIETE_SPACE))
-        #print('var_cuatro_bin: ',var_siete_bin)
-
-        #print('var_cinco: ',var_ocho)
-        #print('VAR_OCHO_SPACE:', VAR_OCHO_SPACE)
         var_ocho_bin = int(np.digitize(var_ocho,VAR_OCHO_SPACE))
-        #print('var_cuatro_bin: ',var_ocho_bin)
 
         return var_uno_bin,var_dos_bin,var_tres_bin,var_cuatro_bin,var_cinco_bin,var_seis_bin,var_siete_bin,var_ocho_bin
 
@@ -181,7 +149,7 @@ class CartPoleAgent():
 
 if __name__ == '__main__':
     env = gym.make('LunarLander-v2')
-    learn = True
+    learn = False
 
     agent = CartPoleAgent(env, path = 'LunarLander.pkl', load_q = not learn)
 

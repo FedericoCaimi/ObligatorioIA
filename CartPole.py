@@ -121,6 +121,7 @@ class CartPoleAgent():
             #tomo una accion aleatoria del ambiente
             action = self.ACTIONS.sample()
             obs, reward, done, info = self.env.step(action)
+            print('obs: ',obs)
             all_obs.append(obs)
             if (done):
                 self.env.reset() 
