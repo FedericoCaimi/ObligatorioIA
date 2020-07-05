@@ -1,5 +1,6 @@
 from Agent import Agent
 from GameBoard import GameBoard
+import numpy as np
 # MOVES
 # LEFT = 0
 # UP = 1
@@ -16,7 +17,7 @@ class Agent2048(Agent):
 
     def play(self, board: GameBoard):
         #Debe retornar un movimiento
-        action,_ = self.minimax(board, 4, 1)
+        action,_ = self.expectimax(board, 4, 1)
         return action
 
     def heuristic_utility(self, board: GameBoard):
@@ -35,30 +36,27 @@ class Agent2048(Agent):
                 - Obtener la cantidad de celdas vacias
                 - Multiplicar por un empty_weight (recomendable en el orden de las decenas de miles)
         """
-        return self.board_smoothness(board)
+        return self.board_smoothness(board)+ self.board_value(board)+self.board_blank_spaces(board)
 
-    def board_smoothness(self, board, weight: float = 0.1):
-        for x in range(4):
-            for y in range(4):
-                board.grid[x][y] = board.grid[x][y] ** 0.5
+    def board_smoothness(self, board, weight: float = 1):
+        s_grid = np.sqrt(board.grid)
+        
         count = 0
         for x in range(4):
             for y in range(3):
-                count += abs(board.grid[x][y] - board.grid[x][y + 1])
+                count += abs(s_grid[x][y] - s_grid[x][y + 1])
         for x in range(3):
             for y in range(4):
-                count += abs(board.grid[x][y] - board.grid[x + 1][y])
-        return count * weight * -1
+                count += abs(s_grid[x][y] - s_grid[x + 1][y])
+        return np.power(count , weight) * -1
 
 
     def board_value(self, board):
         count = 0
-        for x in range(4):
-            for y in range(4):
-                count += board.grid[x][y] ** 2
+        count = np.sum(np.power(board.grid,2))
         return count
     
-    def board_blank_spaces(self, board, weight:float = 10000):
+    def board_blank_spaces(self, board, weight:float = 5000000):
         return len(board.get_available_cells()) * weight
 
     #EL AMBIENTE 2048 SE PUEDE MODELAR COMO UN AGENTE QUE TIRA FICHAS DE MANERA RANDOM
